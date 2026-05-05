@@ -15,10 +15,10 @@ library(snakecase)
 ## Importing new data
 
 ```{r}
-here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") %>%
-  read_csv(
+here::here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") %>%
+  readr::read_csv(
     show_col_types = FALSE,
-    name_repair = to_snake_case,
+    name_repair = snakecase::to_snake_case,
     n_max = 100
   )
 ```
@@ -26,19 +26,19 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") %>%
 ## Exercise: Reading other files.
 
 ```{r}
-here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") %>%
-  read_csv(
+here::here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") %>%
+  readr::read_csv(
     show_col_types = FALSE,
-    name_repair = to_snake_case,
+    name_repair = snakecase::to_snake_case,
     n_max = 100
   )
 ```
 
 ```{r}
-here("data-raw/nurses-stress/stress/6B/6B_1587569373/EDA.csv.gz") %>%
-  read_csv(
+here::here("data-raw/nurses-stress/stress/6B/6B_1587569373/EDA.csv.gz") %>%
+  readr::read_csv(
     show_col_types = FALSE,
-    name_repair = to_snake_case,
+    name_repair = snakecase::to_snake_case,
     n_max = 100
   )
 ```
@@ -68,9 +68,9 @@ add_numbers <- function(num1, num2) {
 #'
 read <- function(file_path) {
   data <- file_path |>
-    read_csv(
+    readr::read_csv(
       show_col_types = FALSE,
-      name_repair = to_snake_case,
+      name_repair = snakecase::to_snake_case,
       n_max = 100
     )
   return(data)
@@ -78,10 +78,10 @@ read <- function(file_path) {
 ```
 
 ```{r}
-here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") |>
+here::here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") |>
   read()
 
-here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
+here::here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
   read()
 ```
 
@@ -97,9 +97,9 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
 #'
 read <- function(file_path, max_rows = 100) {
   data <- file_path |>
-    read_csv(
+    readr::read_csv(
       show_col_types = FALSE,
-      name_repair = to_snake_case,
+      name_repair = snakecase::to_snake_case,
       n_max = max_rows
     )
   return(data)
@@ -109,12 +109,15 @@ read <- function(file_path, max_rows = 100) {
 ### Outputs only 1000 rows
 
 ```{r}
-here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
+here::here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
   read(max_rows = 1000)
 ```
-
 ### Outputs all rows (`Inf` means infinity)
 ```{r}
-here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
+here::here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
   read(max_rows = Inf)
 ```
+
+
+#### Add to description file all used packages, eg.: usethis::use_package("tidyverse")
+#### If you don't know the package name, type in console, eg.: ?read_csv or ?readr or ?here, and find the name in top left corner.
