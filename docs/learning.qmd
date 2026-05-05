@@ -9,8 +9,11 @@ format: html
 ```{r setup}
 library(tidyverse)
 library(here)
-library(snakecase)
+source(here("R/functions.R"))
 ```
+
+#### 'Source' loads the functions into the Quarto document when it is rendered
+
 
 ## Importing new data
 
@@ -60,6 +63,7 @@ add_numbers <- function(num1, num2) {
 ## Import 5C's HR data with a function
 
 ```{r}
+#| eval: false
 #' Read in one nurses' stress data file.
 #'
 #' @param file_path Path to the data file.
@@ -78,6 +82,7 @@ read <- function(file_path) {
 ```
 
 ```{r}
+#| eval: false
 here::here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") |>
   read()
 
@@ -88,6 +93,7 @@ here::here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
 
 # Change output n_max to name max_rows
 ```{r}
+#| eval: false
 #' Read in one nurses' stress data file.
 #'
 #' @param file_path Path to the data file.
@@ -112,6 +118,7 @@ read <- function(file_path, max_rows = 100) {
 here::here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
   read(max_rows = 1000)
 ```
+
 ### Outputs all rows (`Inf` means infinity)
 ```{r}
 here::here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
@@ -121,3 +128,4 @@ here::here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
 
 #### Add to description file all used packages, eg.: usethis::use_package("tidyverse")
 #### If you don't know the package name, type in console, eg.: ?read_csv or ?readr or ?here, and find the name in top left corner.
+#### Finally, style the code using the Palette (⌃⇧PCtrl-Shift-P, then type “style file”)
