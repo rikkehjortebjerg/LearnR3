@@ -57,8 +57,30 @@ add_numbers <- function(num1, num2) {
 }
 ```
 
+## Import 5C's HR data with a function
 
+```{r}
+#' Read in one nurses' stress data file.
+#'
+#' @param file_path Path to the data file.
+#'
+#' @returns Outputs a data frame/tibble.
+#'
+read <- function(file_path) {
+  data <- file_path |>
+    read_csv(
+      show_col_types = FALSE,
+      name_repair = to_snake_case,
+      n_max = 100
+    )
+  return(data)
+}
+```
 
+```{r}
+here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") |>
+  read()
 
-
-
+here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
+  read()
+```
