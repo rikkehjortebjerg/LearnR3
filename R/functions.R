@@ -39,3 +39,26 @@ read_all("HR.csv.gz")
 read_all("IBI.csv.gz")
 
 
+
+#' Get the participant ID from the file path column. First find string ID including "stress", then remove stress.
+#'
+#' @param data Data with `file_path_id` column.
+#'
+#' @returns A data frame/tibble.
+
+get_participant_id <- function(data) {
+  data_with_id <- data |>
+    dplyr::mutate(
+      id = stringr::str_extract(
+        file_path_id,
+        pattern = "/stress/[:alnum:]{2}/"
+      ) |>
+        stringr::str_remove("/stress/") |>
+        stringr::str_remove("/"),
+      .before = file_path_id
+    ) |>
+    dplyr::select(-file_path_id)
+  return(data_with_id)
+}
+
+get_participant_id(hr_data)

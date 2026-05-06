@@ -209,7 +209,7 @@ hr_data |>
 ## 19.7 Exercise: Convert ‘get ID’ code into a function
 
 ```{r}
-#' Get the participant ID from the file path column.
+#' Get the participant ID from the file path column. First find string ID including "stress", then remove stress.
 #'
 #' @param data Data with `file_path_id` column.
 #'
@@ -232,3 +232,28 @@ get_participant_id <- function(data) {
 
 get_participant_id(hr_data)
 ```
+
+
+```{r}
+#' Get the participant ID from the file path column. Find string ID without including "stress". ?<= means "preceded by". ?= means "followed by".
+#'
+#' @param data Data with `file_path_id` column.
+#'
+#' @returns A data frame/tibble.
+get_participant_id <- function(data) {
+  data_with_id <- data |>
+    dplyr::mutate(
+      id = stringr::str_extract(
+        file_path_id,
+        "(?<=/stress/)[:alnum:]{2}(?=/)"
+      ),
+      .before = file_path_id
+    ) |>
+    dplyr::select(-file_path_id)
+  return(data_with_id)
+}
+
+get_participant_id(hr_data)
+
+```
+
