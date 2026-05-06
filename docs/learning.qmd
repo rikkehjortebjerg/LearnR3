@@ -10,11 +10,12 @@ format: html
 library(tidyverse)
 library(here)
 library(fs)
+library(dplyr)
+library(stringr)
 source(here("R/functions.R"))
 ```
 
 #### 'Source' loads the functions into the Quarto document when it is rendered
-
 
 ## Importing new data
 
@@ -91,8 +92,8 @@ here::here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
   read()
 ```
 
-
 # Change output n_max to name max_rows
+
 ```{r}
 #| eval: false
 #' Read in one nurses' stress data file.
@@ -121,17 +122,13 @@ here::here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
 ```
 
 ### Outputs all rows (`Inf` means infinity)
+
 ```{r}
 here::here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
   read(max_rows = Inf)
 ```
 
-
-Add to description file all used packages, eg.: usethis::use_package("tidyverse")
-If you don't know the package name, type in console, eg.: ?read_csv or ?readr or ?here, and find the name in top left corner.
-Finally, style the code using the Palette (⌃⇧PCtrl-Shift-P, then type “style file”)
-
-
+Add to description file all used packages, eg.: usethis::use_package("tidyverse") If you don't know the package name, type in console, eg.: ?read_csv or ?readr or ?here, and find the name in top left corner. Finally, style the code using the Palette (⌃⇧PCtrl-Shift-P, then type “style file”)
 
 ## Using map
 
@@ -143,9 +140,8 @@ hr_files <- here("data-raw/nurses-stress/") |>
 hr_files
 ```
 
-All the files are given to map() and all HR files are read into R.
-list_rbind() to bind (“stack”) the data frames by rows or list_cbind() to bind (“stack”) the data frames by columns.
-Adding ID information to the data frame as a new column called file_path_id.
+All the files are given to map() and all HR files are read into R. list_rbind() to bind (“stack”) the data frames by rows or list_cbind() to bind (“stack”) the data frames by columns. Adding ID information to the data frame as a new column called file_path_id.
+
 ```{r}
 hr_data <- hr_files |>
   map(read) |>
@@ -153,14 +149,11 @@ hr_data <- hr_files |>
 hr_data
 ```
 
-
 ## 18.5 Exercise: Convert map to function and use on sleep.
 
 Type into console: usethis::use_package("fs") and usethis::use_package("purrr") to add to DESCRIPTION
 
 ```{r}
-#| eval: false
-
 #' Read all `.csv.gz` files in the `stress/` folder into one data frame.
 #'
 #' @param filename The name of files in the sub-folders that we
@@ -168,7 +161,7 @@ Type into console: usethis::use_package("fs") and usethis::use_package("purrr") 
 #'
 #' @returns A single data frame/tibble.
 
-readall <- function(filename) {
+read_all <- function(filename) {
   files <- here::here("data-raw/nurses-stress/") |>
     fs::dir_ls(regexp = filename, recurse = TRUE)
 
@@ -178,7 +171,64 @@ readall <- function(filename) {
     purrr::list_rbind(names_to = "file_path_id")
 
   return(data)
-
-  read_all("HR.csv.gz")
 }
+
+read_all("HR.csv.gz")
+read_all("IBI.csv.gz")
+```
+
+## 19.2 Exercise: Inspecting the data
+
+```{r}
+hr_data <- read_all("HR.csv.gz")
+
+survey_data <- here("data-raw/nurses-stress/survey-results.csv.gz") |>
+  read()
+
+hr_data
+survey_data
+```
+
+
+## 19.6 Using regular expressions to extract text
+```{r}
+hr_data |>
+  mutate(
+    id = str_extract(
+      file_path_id,
+      pattern = "/stress/[:alnum:]{2}/"
+    ) |>
+      str_remove("/stress/") |>
+      str_remove("/"),
+    .before = file_path_id
+  ) |>
+  select(-file_path_id)
+```
+
+
+## 19.7 Exercise: Convert ‘get ID’ code into a function
+
+```{r}
+#' Get the participant ID from the file path column.
+#'
+#' @param data Data with `file_path_id` column.
+#'
+#' @returns A data frame/tibble.
+
+get_participant_id <- function(data) {
+  data_with_id <- data |>
+    dplyr::mutate(
+      id = stringr::str_extract(
+        file_path_id,
+        pattern = "/stress/[:alnum:]{2}/"
+      ) |>
+        stringr::str_remove("/stress/") |>
+        stringr::str_remove("/"),
+      .before = file_path_id
+    ) |>
+    dplyr::select(-file_path_id)
+  return(data_with_id)
+}
+
+get_participant_id(hr_data)
 ```
