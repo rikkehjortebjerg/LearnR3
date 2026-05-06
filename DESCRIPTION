@@ -6,9 +6,11 @@ Encoding: UTF-8
 URL: https://github.com/rikkehjortebjerg/LearnR3
 BugReports: https://github.com/rikkehjortebjerg/LearnR3/issues
 Imports: 
+    dplyr,
     fs,
     here,
     purrr,
     readr,
-    snakecase
+    snakecase,
+    stringr
 usethis: :use_package()    tidyverse

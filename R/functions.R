@@ -23,7 +23,7 @@ read <- function(file_path, max_rows = 100) {
 #'
 #' @returns A single data frame/tibble.
 
-readall <- function(filename) {
+read_all <- function(filename) {
   files <- here::here("data-raw/nurses-stress/") |>
     fs::dir_ls(regexp = filename, recurse = TRUE)
 
@@ -33,6 +33,9 @@ readall <- function(filename) {
     purrr::list_rbind(names_to = "file_path_id")
 
   return(data)
-
-  read_all("HR.csv.gz")
 }
+
+read_all("HR.csv.gz")
+read_all("IBI.csv.gz")
+
+
