@@ -9,6 +9,7 @@ format: html
 ```{r setup}
 library(tidyverse)
 library(here)
+library(fs)
 source(here("R/functions.R"))
 ```
 
@@ -126,6 +127,29 @@ here::here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
 ```
 
 
-#### Add to description file all used packages, eg.: usethis::use_package("tidyverse")
-#### If you don't know the package name, type in console, eg.: ?read_csv or ?readr or ?here, and find the name in top left corner.
-#### Finally, style the code using the Palette (⌃⇧PCtrl-Shift-P, then type “style file”)
+Add to description file all used packages, eg.: usethis::use_package("tidyverse")
+If you don't know the package name, type in console, eg.: ?read_csv or ?readr or ?here, and find the name in top left corner.
+Finally, style the code using the Palette (⌃⇧PCtrl-Shift-P, then type “style file”)
+
+
+
+## Using map
+
+The dir_ls() function, which stands for “directory list”, takes the path that we want to search, in this case data-raw/nurses-stress/, an argument to search all sub-folders with recurse = TRUE, and has an argument called regexp to tell it what type of files to search for
+
+```{r}
+hr_files <- here("data-raw/nurses-stress/") |>
+  dir_ls(regexp = "HR.csv.gz", recurse = TRUE)
+
+hr_files
+```
+
+All the files are given to map() and all HR files are read into R.
+list_rbind() to bind (“stack”) the data frames by rows or list_cbind() to bind (“stack”) the data frames by columns.
+Adding ID information to the data frame as a new column called file_path_id.
+```{r}
+hr_data <- hr_files |>
+  map(read) |>
+  list_rbind(names_to = "file_path_id")
+hr_data
+```
