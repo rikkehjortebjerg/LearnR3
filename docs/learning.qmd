@@ -12,8 +12,12 @@ library(here)
 library(fs)
 library(dplyr)
 library(stringr)
+library(lubridate)
 source(here("R/functions.R"))
 ```
+
+
+Add to description file all used packages, eg.: usethis::use_package("tidyverse") If you don't know the package name, type in console, eg.: ?read_csv or ?readr or ?here, and find the name in top left corner. Finally, style the code using the Palette (⌃⇧PCtrl-Shift-P, then type “style file”)
 
 #### 'Source' loads the functions into the Quarto document when it is rendered
 
@@ -128,7 +132,6 @@ here::here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
   read(max_rows = Inf)
 ```
 
-Add to description file all used packages, eg.: usethis::use_package("tidyverse") If you don't know the package name, type in console, eg.: ?read_csv or ?readr or ?here, and find the name in top left corner. Finally, style the code using the Palette (⌃⇧PCtrl-Shift-P, then type “style file”)
 
 ## Using map
 
@@ -229,12 +232,13 @@ get_participant_id <- function(data) {
     dplyr::select(-file_path_id)
   return(data_with_id)
 }
-
-get_participant_id(hr_data)
 ```
 
 
 ```{r}
+#| eval: false
+#| include: false
+
 #' Get the participant ID from the file path column. Find string ID without including "stress". ?<= means "preceded by". ?= means "followed by".
 #'
 #' @param data Data with `file_path_id` column.
@@ -254,6 +258,54 @@ get_participant_id <- function(data) {
 }
 
 get_participant_id(hr_data)
-
 ```
 
+## Working with across
+
+```{r}
+hr_data <- read_all("HR.csv.gz") |>
+  get_participant_id()
+
+hr_data
+```
+
+
+```{r}
+hr_data |>
+  summarise(
+    across(
+      where(is.numeric),
+      list(mean = mean, sd = sd, median = median)
+    )
+  )
+```
+
+
+## Working with dates
+
+```{r}
+hr_data |>
+  mutate(
+    datetime = lubridate::round_date(collection_datetime, unit = "minute"),
+    .before = collection_datetime
+  )
+```
+
+## Summarising by groups
+
+```{r}
+hr_data |>
+  mutate(
+    collection_datetime = lubridate::round_date(
+      collection_datetime,
+      unit = "minute"
+    )
+  ) |>
+  summarise(
+    across(
+      where(is.numeric),
+      list(mean = mean, sd = sd, median = median)
+    ),
+    .by = c(id, collection_datetime)
+  )
+```

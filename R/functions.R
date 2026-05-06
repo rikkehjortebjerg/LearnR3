@@ -35,10 +35,6 @@ read_all <- function(filename) {
   return(data)
 }
 
-read_all("HR.csv.gz")
-read_all("IBI.csv.gz")
-
-
 
 #' Get the participant ID from the file path column. First find string ID including "stress", then remove stress.
 #'
@@ -60,5 +56,3 @@ get_participant_id <- function(data) {
     dplyr::select(-file_path_id)
   return(data_with_id)
 }
-
-get_participant_id(hr_data)
