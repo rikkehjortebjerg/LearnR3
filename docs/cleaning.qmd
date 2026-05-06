@@ -17,6 +17,9 @@ source(here::here("R/functions.R"))
 hr_data <- read_all("HR.csv.gz") |>
   get_participant_id() |>
   summarise_by_datetime()
+
+  summarise_by_datetime(hr_data)
+
 ```
 
 ## Prepare IBI data

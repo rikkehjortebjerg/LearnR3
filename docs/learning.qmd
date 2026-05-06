@@ -338,23 +338,35 @@ summarise_by_datetime <- function(data) {
   return(summarised_data)
 }
 
-summarise_by_datetime(hr_data)
+```
+
+## Pivot longer
+
+```{r}
+survey_data <- here("data-raw/nurses-stress/survey-results.csv.gz") |>
+  read()
+survey_data
 ```
 
 ```{r}
-hr_data <- read_all("HR.csv.gz") |>
-  get_participant_id() |>
-  summarise_by_datetime()
-
-summarise_by_datetime(hr_data)
-
+survey_data |>
+  mutate(date = mdy(date))
 ```
 
 ```{r}
-bvp_data <- read_all("BVP.csv.gz") |>
-  get_participant_id() |>
-  summarise_by_datetime()
+survey_tidy <- survey_data |>
+  mutate(
+    date = mdy(date),
+    start_datetime = as_datetime(paste(date, start_time)),
+    end_datetime = as_datetime(paste(date, end_time)),
+    datetime_id = start_datetime,
+    .before = start_time
+  ) |>
+  select(-c(date, start_time, end_time, duration))
+```
 
-summarise_by_datetime(bvp_data)
+```{r}
+survey_tidy |>
+  select(id, datetime_id, start_datetime, end_datetime)
 ```
 
