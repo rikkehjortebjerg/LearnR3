@@ -140,7 +140,6 @@ The dir_ls() function, which stands for “directory list”, takes the path tha
 ```{r}
 hr_files <- here("data-raw/nurses-stress/") |>
   dir_ls(regexp = "HR.csv.gz", recurse = TRUE)
-
 hr_files
 ```
 
@@ -152,4 +151,34 @@ hr_data <- hr_files |>
   map(read) |>
   list_rbind(names_to = "file_path_id")
 hr_data
+```
+
+
+## 18.5 Exercise: Convert map to function and use on sleep.
+
+Type into console: usethis::use_package("fs") and usethis::use_package("purrr") to add to DESCRIPTION
+
+```{r}
+#| eval: false
+
+#' Read all `.csv.gz` files in the `stress/` folder into one data frame.
+#'
+#' @param filename The name of files in the sub-folders that we
+#'    want to read in.
+#'
+#' @returns A single data frame/tibble.
+
+readall <- function(filename) {
+  files <- here::here("data-raw/nurses-stress/") |>
+    fs::dir_ls(regexp = filename, recurse = TRUE)
+
+
+  data <- files |>
+    purrr::map(read) |>
+    purrr::list_rbind(names_to = "file_path_id")
+
+  return(data)
+
+  read_all("HR.csv.gz")
+}
 ```
