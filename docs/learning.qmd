@@ -13,6 +13,7 @@ library(fs)
 library(dplyr)
 library(stringr)
 library(lubridate)
+library (tidyselect)
 source(here("R/functions.R"))
 ```
 
@@ -309,3 +310,51 @@ hr_data |>
     .by = c(id, collection_datetime)
   )
 ```
+
+
+```{r}
+#' Summarise values in a data frame by a rounded datetime
+#'
+#' @param data A data frame with at least a `collection_datetime` column and
+#'  some numeric columns to summarise.
+#'
+#' @returns A summarised data frame.
+
+summarise_by_datetime <- function(data) {
+  summarised_data <- data |>
+  dplyr::mutate(
+    collection_datetime = lubridate::round_date(
+      collection_datetime,
+      unit = "minute"
+    )
+  ) |>
+  dplyr::summarise(
+    dplyr::across(
+      tidyselect::where(is.numeric),
+      list(mean = mean, sd = sd, median = median)
+    ),
+    .by = c(id, collection_datetime)
+  ) 
+  return(summarised_data)
+}
+
+summarise_by_datetime(hr_data)
+```
+
+```{r}
+hr_data <- read_all("HR.csv.gz") |>
+  get_participant_id() |>
+  summarise_by_datetime()
+
+summarise_by_datetime(hr_data)
+
+```
+
+```{r}
+bvp_data <- read_all("BVP.csv.gz") |>
+  get_participant_id() |>
+  summarise_by_datetime()
+
+summarise_by_datetime(bvp_data)
+```
+

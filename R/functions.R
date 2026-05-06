@@ -1,3 +1,16 @@
+#' Add two numbers together.
+#'
+#' @param num1 A number here.
+#' @param num2 A number here.
+#'
+#' @returns Returns the sum of the two numbers.
+#'
+add_numbers <- function(num1, num2) {
+  added <- num1 + num2
+  return(added)
+}
+
+
 #' Read in one nurses' stress data file.
 #'
 #' @param file_path Path to the data file.
@@ -55,4 +68,28 @@ get_participant_id <- function(data) {
     ) |>
     dplyr::select(-file_path_id)
   return(data_with_id)
+}
+
+#' Summarise values in a data frame by a rounded datetime
+#'
+#' @param data A data frame with at least a `collection_datetime` column and
+#'  some numeric columns to summarise.
+#'
+#' @returns A summarised data frame.
+summarise_by_datetime <- function(data) {
+  summarised_data <- data |>
+    dplyr::mutate(
+      collection_datetime = lubridate::round_date(
+        collection_datetime,
+        unit = "minute"
+      )
+    ) |>
+    dplyr::summarise(
+      dplyr::across(
+        where(is.numeric),
+        list(mean = mean, sd = sd, median = median)
+      ),
+      .by = c(id, collection_datetime)
+    )
+  return(summarised_data)
 }
