@@ -18,8 +18,7 @@ hr_data <- read_all("HR.csv.gz") |>
   get_participant_id() |>
   summarise_by_datetime()
 
-  summarise_by_datetime(hr_data)
-
+summarise_by_datetime(hr_data)
 ```
 
 ## Prepare IBI data
@@ -48,4 +47,15 @@ bvp_data <- read_all("BVP.csv.gz") |>
 eda_data <- read_all("EDA.csv.gz") |>
   get_participant_id() |>
   summarise_by_datetime()
+```
+
+
+## Process survey data
+```{r}
+survey_tidy <- here::here("data-raw/nurses-stress/survey-results.csv.gz") |>
+  read() |>
+  tidy_survey_dates()
+
+survey_long <- survey_tidy |>
+  survey_to_long()
 ```
