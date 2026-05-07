@@ -93,3 +93,49 @@ summarise_by_datetime <- function(data) {
     )
   return(summarised_data)
 }
+
+
+
+#' Tidy up data
+#'
+#' @param data A data frame of the tidied data
+#'
+#' @returns A tidied data frame.
+tidy_survey_dates <- function(data) {
+  tidied <- data |>
+    dplyr::mutate(
+      date = lubridate::mdy(date),
+      start_datetime = lubridate::as_datetime(paste(date, start_time)),
+      end_datetime = lubridate::as_datetime(paste(date, end_time)),
+      datetime_id = start_datetime,
+      .before = start_time
+    ) |>
+    dplyr::select(-c(date, start_time, end_time, duration))
+  return(tidied)
+}
+
+
+#' Pivot data to long
+#'
+#' @param data A pivoted data frame of the tidied data
+#'
+#' @returns A pivoted data frame.
+survey_to_long <- function(data) {
+  longer <- data |>
+    dplyr::select(id, datetime_id, start_datetime, end_datetime) |>
+    tidyr::pivot_longer(
+      c(start_datetime, end_datetime),
+      names_to = NULL,
+      values_to = "collection_datetime"
+    ) |>
+    dplyr::group_by(pick(-collection_datetime)) |>
+    tidyr::complete(
+      collection_datetime = seq(
+        min(collection_datetime),
+        max(collection_datetime),
+        by = 60
+      )
+    ) |>
+    dplyr::ungroup()
+  return(longer)
+}

@@ -13,7 +13,7 @@ library(fs)
 library(dplyr)
 library(stringr)
 library(lubridate)
-library (tidyselect)
+library(tidyselect)
 source(here("R/functions.R"))
 ```
 
@@ -322,22 +322,21 @@ hr_data |>
 
 summarise_by_datetime <- function(data) {
   summarised_data <- data |>
-  dplyr::mutate(
-    collection_datetime = lubridate::round_date(
-      collection_datetime,
-      unit = "minute"
+    dplyr::mutate(
+      collection_datetime = lubridate::round_date(
+        collection_datetime,
+        unit = "minute"
+      )
+    ) |>
+    dplyr::summarise(
+      dplyr::across(
+        tidyselect::where(is.numeric),
+        list(mean = mean, sd = sd, median = median)
+      ),
+      .by = c(id, collection_datetime)
     )
-  ) |>
-  dplyr::summarise(
-    dplyr::across(
-      tidyselect::where(is.numeric),
-      list(mean = mean, sd = sd, median = median)
-    ),
-    .by = c(id, collection_datetime)
-  ) 
   return(summarised_data)
 }
-
 ```
 
 ## Pivot longer
@@ -346,11 +345,6 @@ summarise_by_datetime <- function(data) {
 survey_data <- here("data-raw/nurses-stress/survey-results.csv.gz") |>
   read()
 survey_data
-```
-
-```{r}
-survey_data |>
-  mutate(date = mdy(date))
 ```
 
 ```{r}
@@ -370,3 +364,21 @@ survey_tidy |>
   select(id, datetime_id, start_datetime, end_datetime)
 ```
 
+```{r}
+survey_tidy |>
+  select(id, datetime_id, start_datetime, end_datetime) |>
+  pivot_longer(
+    c(start_datetime, end_datetime),
+    names_to = NULL,
+    values_to = "collection_datetime"
+  ) |>
+  group_by(pick(-collection_datetime)) |>
+  complete(
+    collection_datetime = seq(
+      min(collection_datetime),
+      max(collection_datetime),
+      by = 60
+    )
+  ) |>
+  ungroup()
+```

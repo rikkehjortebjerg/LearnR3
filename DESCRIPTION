@@ -14,5 +14,6 @@ Imports:
     readr,
     snakecase,
     stringr,
+    tidyr,
     tidyselect
 usethis: :use_package()    tidyverse
