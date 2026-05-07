@@ -382,3 +382,52 @@ survey_tidy |>
   ) |>
   ungroup()
 ```
+
+```{r}
+survey_tidy <- tidy_survey_dates(survey_data)
+survey_long <- survey_to_long(survey_tidy)
+
+```
+
+```{r}
+survey_long
+survey_tidy
+```
+
+```{r}
+survey_long |>
+  left_join(survey_tidy)
+```
+
+```{r}
+survey_tidy |>
+  count(id, datetime_id)|>
+  filter(n > 1)
+```
+
+```{r}
+survey_long |>
+  right_join(survey_tidy)
+```
+
+```{r}
+survey_long |>
+  full_join(survey_tidy)
+```
+
+```{r}
+survey_long |>
+  full_join(survey_tidy) |>
+  full_join(hr_data)
+```
+```{r}
+nurses_stress <- survey_long |>
+  full_join(survey_tidy) |>
+  full_join(hr_data)
+
+nurses_stress |>
+  arrange(id, collection_datetime) |>
+    View()
+
+```
+

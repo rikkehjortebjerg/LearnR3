@@ -59,3 +59,21 @@ survey_tidy <- here::here("data-raw/nurses-stress/survey-results.csv.gz") |>
 survey_long <- survey_tidy |>
   survey_to_long()
 ```
+
+
+## Joining datasets
+
+```{r}
+nurses_stress <- survey_long |>
+  dplyr::full_join(survey_tidy) |>
+  dplyr::full_join(hr_data) |>
+  dplyr::full_join(ibi_data) |>
+  dplyr::full_join(temp_data) |>
+  dplyr::full_join(bvp_data) |>
+  dplyr::full_join(eda_data)
+```
+
+```{r}
+readr::write_csv(nurses_stress, here::here("data/nurses-stress.csv"))
+usethis::use_git_ignore("data/nurses-stress.csv")
+```
